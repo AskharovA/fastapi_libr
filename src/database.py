@@ -1,5 +1,5 @@
 from sqlalchemy import NullPool
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import declared_attr, DeclarativeBase
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from src.config import settings
 
@@ -12,4 +12,8 @@ async_session_maker_null_pool = async_sessionmaker(bind=engine_null_pool, expire
 
 
 class Base(DeclarativeBase):
-    pass
+    @declared_attr
+    def __tablename__(cls):
+        if hasattr(cls, 'table_name'):
+            return cls.table_name
+        return cls.__name__.lower() + "s"
